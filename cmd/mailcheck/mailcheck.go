@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	commons.NewProgressBar(-1, "Reading input file")
 	lines, err := util.ScanFile(commons.InputFile)
 	if err != nil {
 		log.Fatal(err)
@@ -19,14 +20,20 @@ func main() {
 	pool := pond.New(commons.MaxWorkers, len(lines))
 	c := make(chan verifier.CheckResult, len(lines))
 
+	commons.NewProgressBar(len(lines), "Processing emails")
 	for _, v := range lines {
 		str := v // pesky races
 		pool.Submit(func() {
-			verifier.Check(str, c)
+			if err := verifier.Check(str, c); err != nil {
+				log.Fatal(err)
+			}
 		})
 	}
 	pool.StopAndWait()
 	close(c)
 
-	csv.ExportResults(c)
+	commons.NewProgressBar(len(lines), "Exporting results")
+	if err := csv.ExportResults(c); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -2,7 +2,6 @@ package csv
 
 import (
 	"encoding/csv"
-	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -23,10 +22,10 @@ func header() []string {
 	return header
 }
 
-func ExportResults(c <-chan verifier.CheckResult) {
+func ExportResults(c <-chan verifier.CheckResult) error {
 	f, err := os.Create(commons.OutputFile)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer f.Close()
 
@@ -35,6 +34,11 @@ func ExportResults(c <-chan verifier.CheckResult) {
 
 	for r := range c {
 		w.Write(r.StringSlice())
+		if err := commons.IncrementProgressBar(); err != nil {
+			return err
+		}
 	}
 	w.Flush()
+
+	return nil
 }

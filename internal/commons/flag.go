@@ -10,6 +10,7 @@ var (
 	InputFile, OutputFile string
 	HelloName, FromEmail  string
 	MaxWorkers            int
+	Quiet                 bool
 )
 
 func init() {
@@ -19,6 +20,7 @@ func init() {
 	flag.StringVar(&HelloName, "n", "no-reply.net", "name for SMTP HELO command")
 	flag.StringVar(&FromEmail, "f", "mailcheck@no-reply.net", "email address for SMTP MAIL FROM command")
 	flag.IntVar(&MaxWorkers, "j", 10, "maximum number of workers for concurrent processing")
+	flag.BoolVar(&Quiet, "q", false, "quiet (suppress progress output)")
 	flag.Parse()
 
 	if *help {

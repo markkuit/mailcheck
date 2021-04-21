@@ -16,7 +16,7 @@ func init() {
 }
 
 // Check parses an email address and checks its deliverability, returning the results to channel
-func Check(address string, c chan<- CheckResult) {
+func Check(address string, c chan<- CheckResult) error {
 	addressParsed := emailVerifier.ParseAddress(address)
 	if addressParsed.Valid {
 		if res, err := emailVerifier.CheckSMTP(addressParsed.Domain, addressParsed.Username); err == nil {
@@ -39,4 +39,10 @@ func Check(address string, c chan<- CheckResult) {
 			Error:   errors.New("invalid address"),
 		}
 	}
+
+	if err := commons.IncrementProgressBar(); err != nil {
+		return err
+	}
+
+	return nil
 }
