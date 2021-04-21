@@ -15,6 +15,7 @@ func init() {
 	emailVerifier.FromEmail(commons.FromEmail)
 }
 
+// Check parses an email address and checks its deliverability, returning the results to channel
 func Check(address string, c chan<- CheckResult) {
 	addressParsed := emailVerifier.ParseAddress(address)
 	if addressParsed.Valid {
